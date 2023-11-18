@@ -175,7 +175,7 @@ public class Indexer {
             int count = 0; 
             for (FileTermFrequency fileTF : sortedTFIDF) {
                 System.out.println(String.valueOf(count + 1) + "o arquivo mais relevante = " +  fileTF.getFileName() + ", com " +
-                        fileTF.getNrTermosEncontrados() + " palavras encontradas em " + fileTF.getNrPalavras() + " palavras. TFIDF de " + fileTF.getFileTFIDF());
+                        fileTF.getNrTermosEncontrados() + " termos encontrados em " + fileTF.getNrPalavras() + " palavras. TFIDF de " + fileTF.getFileTFIDF());
                 count++;
             } 
             System.out.println(files.size() + " arquivos presentes no diretório " + directoryPath);

@@ -17,12 +17,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Indexer {
-
     // Constantes referentes aos parâmetros de entrada:
     public static final String FREQ_OPERATION = "freq";
     public static final String FREQWORD_OPERATION = "freq-word";
     public static final String SEARCH_OPERATION = "search";
-
     // -------------------------------------------------------------------- //
     public static void main(String[] args) {
         // Veriica o tipo da operação passada no primeiro parâmetro de entrada - arg[0]
@@ -40,12 +38,11 @@ public class Indexer {
                 System.out.println("Forneça um argumento válido");
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Forneça todos os 3 argumentos para a execução correta do indexador");
+            System.out.println("Forneça todos os 3 argumentos para a execucao correta do indexador");
         } catch (RuntimeException e) {
-            System.out.println("Adicione a propriedade " + e.getMessage());
+            System.out.println("Erro ao executar operacao! Forneca os argumentos corretamente!");
         }
     }
-
     // -------------------------------------------------------------------- //
     private static void freqNFile(String n, String filePath) throws RuntimeException {
         System.out.println("Iniciando operação --freq N ARQUIVO");
@@ -67,16 +64,13 @@ public class Indexer {
                     hashTable.put(currentWord.hashCode(), currentWord);
                 }
             }
-            freqNFileOperation(hashTable, wordsNumber);
+            freqNFileOperation(hashTable, wordsNumber); 
         } catch (NumberFormatException e) {
             String msg = "Forneça um número válido para a operação de busca";
             System.out.println(msg);
             throw new RuntimeException(msg);
-//        } catch (AccessDeniedException e) {
-//            System.out.println("Para desta operação forneca o caminho para um arquivo de texto");
         }
     }
-
     // -------------------------------------------------------------------- //
     private static void freqWordNFile(String word, String filePath) throws RuntimeException {
         System.out.println("Iniciando operação --freq-word PALAVRA ARQUIVO");
@@ -105,8 +99,7 @@ public class Indexer {
             throw new RuntimeException(msg);
         }
     }
-
-    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //    
     private static void searchTermNFile(String term, String directoryPath) throws RuntimeException {
         System.out.println("Iniciando operação --search TERMO ARQUIVO");
         // Recupera uma lista de arquivos presentes no diretorio informado:
@@ -123,12 +116,12 @@ public class Indexer {
         while (tokenizer.hasMoreTokens()) {
             String word = sanitazeString(tokenizer.nextToken());
             wordsList.add(word);
-        }
-        // Cria a hashTable:
-        IndexerHashTable hashTable = new IndexerHashTable();
+        } 
         // Se houver arquivos no diretorio:
         if (files != null && files.size() > 0) {
             for (File file : files) {
+                // Cria a hashTable:
+                IndexerHashTable hashTable = new IndexerHashTable();
                 // Contadores de palavras e termos encontrados:
                 int wordsCount = 0;
                 int termsFoundCount = 0;
@@ -174,8 +167,8 @@ public class Indexer {
             // Imprime as palavras na ordem correta:
             int count = 0; 
             for (FileTermFrequency fileTF : sortedTFIDF) {
-                System.out.println(String.valueOf(count + 1) + "o arquivo mais relevante = " +  fileTF.getFileName() + ", com " +
-                        fileTF.getNrTermosEncontrados() + " termos encontrados em " + fileTF.getNrPalavras() + " palavras. TFIDF de " + fileTF.getFileTFIDF());
+                System.out.println(String.valueOf(count + 1) + "o arquivo mais relevante = " +  fileTF.getFileName() + ", com media de " +
+                        fileTF.getNrTermosEncontrados() + " palavras encontradas em " + fileTF.getNrPalavras() + " palavras. TFIDF de " + fileTF.getFileTFIDF());
                 count++;
             } 
             System.out.println(files.size() + " arquivos presentes no diretório " + directoryPath);
@@ -183,7 +176,7 @@ public class Indexer {
             System.out.println("Diretório vazio ou inexistente");
         }
     }
-    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //    
     //retorna o conteúdo do arquivo em formato de String. utilizando nos casos de --freq e --freq-word
     public static String readFile(String filePath) {
         StringBuilder content = new StringBuilder();
@@ -197,17 +190,14 @@ public class Indexer {
         }
         return content.toString();
     }
-
     // -------------------------------------------------------------------- // 
     // Traz todos os arquivos presentes no diretório passado por parâmetro na operação de --search
     private static List<File> getFiles(String pathName) {
         List<File> arquivos = null;
         File path = new File(pathName);
-
         arquivos = Arrays.asList(path.listFiles());
         return arquivos;
     }
-
     // -------------------------------------------------------------------- //
     // Retira todos os caracteres que não sejam letras:
     private static String sanitazeString(String s) {
@@ -215,8 +205,7 @@ public class Indexer {
         str = s.toLowerCase().replaceAll("[^a-zA-Z]", "");
         return str;
     }
-
-    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- // 
     private static void freqNFileOperation(IndexerHashTable hashTable, int wordsNumber) {
         // Cria obj para contar ocorrencia das palavras no arquivo:
         List<OcurrenceInFileEntry> entries = new ArrayList();
@@ -224,14 +213,11 @@ public class Indexer {
         int count = 0;
         // Percorre a tabela hash contando as ocorrencias das palavras:
         for (LinkedList<IndexerHashTableEntry<Integer, String>> tableEntrie : tableEntries) {
-            if (tableEntrie != null) {
-                for (IndexerHashTableEntry<Integer, String> entry : tableEntrie) {
-                    String word = entry.getValue();
-                    int ocurrenceInFile = hashTable.getWordsCount(entry.getKey(), word);
-                    OcurrenceInFileEntry fileEntry = new OcurrenceInFileEntry(word, ocurrenceInFile);
-                    if (!entries.contains(fileEntry)) {
-                        entries.add(fileEntry);
-                    }
+            if (tableEntrie != null) {      
+                //System.out.println("Palavra " + tableEntrie.getLast().getValue() + " count " + tableEntrie.getLast().getCount());
+                OcurrenceInFileEntry fileEntry = new OcurrenceInFileEntry(tableEntrie.getLast().getValue(), tableEntrie.getLast().getCount());
+                if (!entries.contains(fileEntry)) {
+                    entries.add(fileEntry);                    
                 }
             }
         }

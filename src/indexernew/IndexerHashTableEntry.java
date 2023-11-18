@@ -7,6 +7,7 @@ public class IndexerHashTableEntry<Integer, String> implements Map.Entry<Integer
     // Definição:
     private Integer key;
     private String value;
+    private int count;  
     private IndexerHashTableEntry<Integer,String> next;
     // Criador:
     public IndexerHashTableEntry(Integer key, String value) {
@@ -26,6 +27,12 @@ public class IndexerHashTableEntry<Integer, String> implements Map.Entry<Integer
     public String setValue(String value) {
         this.value = value;
         return value;
+    }
+    public int getCount() {
+        return count;
+    }
+    public void setCount(int count) {
+        this.count = count;
     }
     public IndexerHashTableEntry<Integer, String> getNext() {
         return next;

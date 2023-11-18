@@ -26,6 +26,7 @@ public class IndexerHashTable<Integer, String> {
             // Redimensionar a tabela se o fator de carga for atingido.
             resize();
         }
+        int count = 0;
         // Calcula Index:
         int index = getIndex(key, table.length);
         // Carrega o slot com base no index calculado:
@@ -33,10 +34,14 @@ public class IndexerHashTable<Integer, String> {
         // Se slot for null, cria e atribui uma lista encadeada a ele:
         if (slot == null) {
             slot = new LinkedList<>();
-            table[index] = slot;
+            table[index] = slot;  
         }
         // Adiciona o elemento à lista deste slot:
         slot.add(new IndexerHashTableEntry(key, value));
+        // Realiza a contagem aqui:
+        count = slot.size();
+        slot.getLast().setCount(count);
+        // System.out.println("palavra: " + value + " - count atual: " + count); 
         // Atualiza tabela e incrementa o tamanho: 
         table[index] = slot;
         TABLE_SIZE++;

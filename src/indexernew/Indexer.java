@@ -40,7 +40,7 @@ public class Indexer {
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Forneça todos os 3 argumentos para a execucao correta do indexador");
         } catch (RuntimeException e) {
-            System.out.println("Erro ao executar operacao! Forneca os argumentos corretamente!");
+            System.out.println("Erro ao executar operacao! Forneca os argumentos corretamente! " + e.getMessage());
         }
     }
     // -------------------------------------------------------------------- //
@@ -138,37 +138,73 @@ public class Indexer {
                     if (currentWord.length() >= 2) {
                         hashTable.put(currentWord.hashCode(), currentWord);
                         // Incrementa contador de palavras:
-                        wordsCount++;
-                        // Incrementa contador do termo buscado:
-                        for(String cWord : wordsList) {
-                            if (currentWord.equals(cWord)) {
-                                termsFoundCount++;
-                            }
-                        }
+                        wordsCount++;   
                     }
                 }
-                // Adiciona na listTF quando for encontrado ao menos um termo:
-                if (termsFoundCount > 0) {
-                    // Media das palavras encontradas (se houver mais de uma) é feita aqui:
-                    listTF.add(new FileTermFrequency(wordsCount, termsFoundCount/wordsList.size(), file.getName()));
-                }
-            }        
+                // Vai contar na tabela hash todas as palavras do termo:
+                for(String cWord : wordsList) {
+                    termsFoundCount = hashTable.getWordsCount(cWord.hashCode(), cWord);
+                    // Adiciona na listTF quando for encontrado ao menos um termo:
+                    if (termsFoundCount > 0) {
+                        // TF calculado na criação do OBJ:
+                        listTF.add(new FileTermFrequency(wordsCount, termsFoundCount, file.getName(), cWord));
+                    }
+                }     
+            }      
+            // Contando tamanho real de arquivos em que o termo apareceu:
+            int nrDocsComTermo = 1; // inicia com 1 mesmo 
+            for(int i = 1; i <  listTF.size(); i++) {
+                if(!listTF.get(i).getFileName().equals(listTF.get(i-1).getFileName())) {
+                    nrDocsComTermo++; 
+                }   
+            }
             // Calculo IDF:
             // log[ (Número de Documentos) / (Número de documentos em que t está presente)
-            IDF = Math.log(files.size()) / (listTF.size());
-            // Calculo do TFIDF de cada arquivo em listTF:
+            IDF = Math.log(files.size()) / nrDocsComTermo;
+            // Calculo do TFIDF de cada arquivo e cada palavra em listTF:
             for (FileTermFrequency fileTF : listTF) {
                 fileTF.calcularTFIDF(IDF);
+            }      
+            // Lista para união e calculo de medias:
+            ArrayList<FileTermFrequency> listTFUnion = new ArrayList<FileTermFrequency>();
+            // Une todos os arquivos repetidos, calculando média do TFIDF:
+            for(int i = 0; i <  listTF.size(); i++) { 
+                int nrArquivosIguais = 1;
+                double somaTFIDF = listTF.get(i).getFileTFIDF();
+                double mediaTFIDF = 0;        
+                // Ve se arquivo atual é o mesmo que os próximos para unir e realizar calculos:
+                while(true) {
+                    if((i +1) < listTF.size()) {
+                        if(listTF.get(i).getFileName().equals(listTF.get(i+1).getFileName())) {
+                            somaTFIDF += listTF.get(i+1).getFileTFIDF();
+                            nrArquivosIguais ++;
+                            if((i +1) < listTF.size()) {
+                                i++;
+                            } else {
+                                break;
+                            }  
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }       
+                }
+                // Calcula Media e inclui na nova lista:
+                mediaTFIDF = somaTFIDF / nrArquivosIguais;        
+                FileTermFrequency arquivoERelevancia = new FileTermFrequency();
+                arquivoERelevancia.setFileName(listTF.get(i).getFileName());
+                arquivoERelevancia.setFileTFIDF(mediaTFIDF);
+                listTFUnion.add(arquivoERelevancia);
             }     
-            // Ordena a lista (decrescente) a partir do atributo FileTFIDF:
-            List<FileTermFrequency> sortedTFIDF = listTF.stream()
+            // Ordena a lista após a uniao (decrescente) a partir do atributo FileTFIDF:
+            List<FileTermFrequency> sortedTFIDF = listTFUnion.stream()
                     .sorted(Comparator.comparingDouble(FileTermFrequency::getFileTFIDF).reversed())
                     .collect(Collectors.toList());
             // Imprime as palavras na ordem correta:
             int count = 0; 
             for (FileTermFrequency fileTF : sortedTFIDF) {
-                System.out.println(String.valueOf(count + 1) + "o arquivo mais relevante = " +  fileTF.getFileName() + ", com media de " +
-                        fileTF.getNrTermosEncontrados() + " palavras encontradas em " + fileTF.getNrPalavras() + " palavras. TFIDF de " + fileTF.getFileTFIDF());
+                System.out.printf(String.valueOf(count + 1) + "o arquivo mais relevante = \"" +  fileTF.getFileName() + "\", com TFIDF = %.10f\n", fileTF.getFileTFIDF());
                 count++;
             } 
             System.out.println(files.size() + " arquivos presentes no diretório " + directoryPath);

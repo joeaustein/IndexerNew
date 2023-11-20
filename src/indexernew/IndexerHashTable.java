@@ -53,6 +53,11 @@ public class IndexerHashTable<Integer, String> {
         int index = getIndex(key, table.length);
         // Carrega o slot com base no index calculado:
         LinkedList<IndexerHashTableEntry<Integer, String>> slot = table[index];
+        // Se slot for null, cria e atribui uma lista encadeada a ele:
+        if (slot == null) {
+            slot = new LinkedList<>();
+            table[index] = slot;  
+        }
         // Percorre lista do slot, retornando o valor quando a chave corresponder:
         for (IndexerHashTableEntry<Integer, String> entry : slot) {
             if (entry.getKey().equals(key)) {
@@ -69,6 +74,11 @@ public class IndexerHashTable<Integer, String> {
         int index = getIndex(key, table.length);
         // Carrega o slot com base no index calculado:
         LinkedList<IndexerHashTableEntry<Integer, String>> slot = table[index];
+        // Se slot for null, cria e atribui uma lista encadeada a ele:
+        if (slot == null) {
+            slot = new LinkedList<>();
+            table[index] = slot;  
+        }
         // Percorre lista do slot, incrementando count a cada palavra correspondente:
         for (IndexerHashTableEntry<Integer, String> entry : slot) {
             if (entry.getValue() != null && entry.getValue().equals(word)) {

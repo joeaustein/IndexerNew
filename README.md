@@ -16,7 +16,7 @@ Criar um programa capaz de indexar palavras de um ou mais documentos de texto, s
 
 ## Conteúdo:
 
-Este repositório contém o executável (.jar) em "dist". Seu código-fonte encontra-se em "src/indexernew".
+Este repositório contém o executável "IndexerNew.jar" na pasta "dist". Seu código-fonte encontra-se no diretório "src/indexernew/".
 
 ## Execução:
 
@@ -39,14 +39,13 @@ informando os argumentos necessários, conforme mostrado a seguir:
 
 ## Observações:
 
-Será necessário ter o Java intalado para realizar a execução e/ou compilação do programa, para isso, 
-os seguintes comandos podem ser executados (podem haver mudanças de uma distro para outra, vale lembrar):  
+O programa foi compilado na versão 19 do Java, por isso será necessário ter o Java instalado e atualizado (versão 19 ou posterior) para realizar a execução e/ou compilação do programa. Para isso, os seguintes comandos podem ser executados (podem haver mudanças de uma distro para outra, vale lembrar):  
 
 apt update
+
+apt install openjdk-19-jre-headless
   
-apt install default-jre
-  
-apt install default-jdk
+apt install openjdk-19-jdk-headless
 
 ## Compilação:
 
